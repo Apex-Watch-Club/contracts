@@ -161,7 +161,9 @@ contract Pledge is Ownable, ReentrancyGuard {
 	}
 
 
-	/// @dev Prevent all transactions in case of emergency
+  /**
+   * @dev Prevent all non-admin transactions in case of emergency
+   */
 	function freeze() public onlyOwner {
 		require(!_isFrozen, "Already frozen.");
 		_isFrozen = true;
@@ -169,6 +171,9 @@ contract Pledge is Ownable, ReentrancyGuard {
 	}
 	
 
+  /**
+   * @dev Toggle opening / closing of pledging
+   */
 	function unfreeze() public onlyOwner {
 		require(_isFrozen, "Not frozen.");
 		_isFrozen = false;
