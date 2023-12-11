@@ -10,7 +10,7 @@ contract PledgeTest is Test {
 	address constant USER1 = address(1);
 	address constant USER2 = address(2);
 	address constant USER3 = address(2);
-	uint256 constant PRICE = 10_000;
+	uint256 constant PRICE = 10_000 ether;
 	uint256 constant SUPPLY = 150;
 
 	TestToken usdt = new TestToken("USDT", "USDT");
@@ -54,6 +54,20 @@ contract PledgeTest is Test {
 
 		vm.startPrank(USER1);
 		usdt.approve(address(pledge), PRICE);
+		pledge.pledgeUsdt(PRICE);
+		vm.stopPrank();
+
+		assertEq(usdt.balanceOf(USER1), 0);
+		assertEq(pledge.getPledged(USER1), PRICE);
+		assertEq(pledge.getTotalPledgedCount(), 1);
+    }
+
+    function testFail_NotEnoughAllowance() public {
+		pledge.unfreeze();
+
+		vm.startPrank(USER1);
+		usdt.approve(address(pledge), PRICE-1);
+		vm.expectRevert("USDT allowance not enough.");
 		pledge.pledgeUsdt(PRICE);
 		vm.stopPrank();
 
