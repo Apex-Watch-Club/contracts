@@ -112,6 +112,7 @@ contract Pledge is Ownable, ReentrancyGuard {
 		return _totalPledgedCount;
 	}
 	
+
 	function getTotalSupply() public view returns (uint256) {
 		return _totalSupply;
 	}
@@ -120,6 +121,7 @@ contract Pledge is Ownable, ReentrancyGuard {
 	function getPrice() public view returns (uint256) {
 		return _pledgePrice;
 	}
+
 
   function getIsFrozen() public view returns (bool) {
     return _isFrozen;
