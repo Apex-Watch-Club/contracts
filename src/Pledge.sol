@@ -131,6 +131,7 @@ contract Pledge is Ownable, ReentrancyGuard {
   // #############################
 
 	function setPrice(uint256 _newPrice) public onlyOwner returns (uint256) {
+		// only admin can change state when frozen
 		require(!_isFrozen || msg.sender == owner(), "All state changing transactions currently frozen.");
 		require(_newPrice > 0, "New price must be greater than 0.");
 
