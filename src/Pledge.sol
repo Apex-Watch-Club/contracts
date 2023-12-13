@@ -2,6 +2,7 @@
 pragma solidity ^0.8.13;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 
@@ -17,6 +18,11 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @dev This contract is specifically built for Apex Watch Club Pledge
  */
 contract Pledge is Ownable, ReentrancyGuard {
+  // #############################
+  // #         LIBRARIES         #
+  // #############################
+  using SafeERC20 for IERC20;
+
   // #############################
   // #         VARIABLES         #
   // #############################
@@ -55,10 +61,18 @@ contract Pledge is Ownable, ReentrancyGuard {
 	}
 
   // #############################
-  // #      PLEDGE FUNCTIONS     #
+  // #  PUBLIC STATE FUNCTIONS   #
   // #############################
 
-	function pledgeUsdt(uint256 _amount) public nonReentrant returns (bool) {
+	function approveUsdt(address _spender, uint256 _value) public nonReentrant {
+    _tokenUsdt.forceApprove(_spender, _value);
+  }
+
+	function approveUsdc(address _spender, uint256 _value) public nonReentrant {
+    _tokenUsdc.forceApprove(_spender, _value);
+  }
+
+	function pledgeUsdt(uint256 _amount) public nonReentrant {
 		// only admin can change state when frozen
 		require(!_isFrozen || msg.sender == owner(), "All state changing transactions currently frozen.");
 		// must be a multiple of _pledgePrice
@@ -75,11 +89,11 @@ contract Pledge is Ownable, ReentrancyGuard {
 		_totalPledgedCount = _totalPledgedCount + _count;
 
 		emit PledgeUsdt(msg.sender, address(this), _amount, block.timestamp);
-		return  _tokenUsdt.transferFrom(msg.sender, address(this), _amount);
+		_tokenUsdt.safeTransferFrom(msg.sender, address(this), _amount);
 	}
 
 
-	function pledgeUsdc(uint256 _amount) public nonReentrant returns (bool) {
+	function pledgeUsdc(uint256 _amount) public nonReentrant {
 		// only admin can change state when frozen
 		require(!_isFrozen || msg.sender == owner(), "All state changing transactions currently frozen.");
 		// must be a multiple of _pledgePrice
@@ -96,7 +110,7 @@ contract Pledge is Ownable, ReentrancyGuard {
 		_totalPledgedCount = _totalPledgedCount + _count;
 
 		emit PledgeUsdc(msg.sender, address(this), _amount, block.timestamp);
-		return _tokenUsdc.transferFrom(msg.sender, address(this), _amount);
+		return _tokenUsdc.safeTransferFrom(msg.sender, address(this), _amount);
 	}
 
   // #############################

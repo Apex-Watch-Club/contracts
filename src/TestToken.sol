@@ -7,4 +7,8 @@ contract TestToken is ERC20 {
 	function mint(address _address, uint256 _amount) public {
 		_mint(_address, _amount);
 	}
+
+  function decimals() public view override returns (uint8) {
+      return 6;
+  }
 }
